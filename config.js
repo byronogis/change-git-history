@@ -30,17 +30,8 @@ export const OLD_EMAILS = [
 ]
 
 /**
- * Behavior control (Arguments)
- * CONTAIN_FORK: whether to include forked repositories
- * FORCE_CHANGE: whether to force change
- * NO_CLONE: whether to git clone repositories
- * NO_FETCH: whether to git fetch repositories info
- * PUSH: whether to git push
- * ORiGIN_NAME: the name of the remote repository
+ * The directory where the repositories are stored
+ * The default is `${USERNAME}_repos`
+ * Also can be set to an relative path, such as `foo/repos`, `./foo/repos`
  */
-export const ARG_CONTAIN_FORK = false
-export const ARG_FORCE_CHANGE = false
-export const ARG_NO_CLONE = false
-export const ARG_NO_FETCH = false
-export const ARG_PUSH = false
-export const ARG_ORiGIN_NAME = 'origin'
+export const REPOS_DIR = `${USERNAME}_repos`

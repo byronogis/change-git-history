@@ -1,116 +1,102 @@
 #! /usr/bin/env node
 
 import { $, cd, chalk, fetch } from 'zx'
+import { resolve } from 'node:path'
+import { runGithubReposRequest as runRequestRepos } from './script/repos-request.js'
+import { runReposClone } from './script/repos-clone.js'
+import { runReposRemote } from './script/repos-remote.js'
+import { runReposPush } from './script/repos-push.js'
+import { runChangeUserName } from './script/change-user-name.js'
+import { runChangeUserEmail } from './script/change-user-email.js'
 import { 
   ACCESS_TOKEN,
   USERNAME,
   NEW_NAME, NEW_EMAIL,
   OLD_NAMES, OLD_EMAILS,
-  ARG_CONTAIN_FORK, ARG_FORCE_CHANGE,
-  ARG_NO_CLONE, ARG_NO_FETCH,
-  ARG_PUSH, ARG_ORiGIN_NAME,
+  REPOS_DIR,
 } from './config.js'
 
 const cwd = process.cwd()
 
-let reposInfo = ARG_NO_FETCH ? [] : await runRequestRepos()
-reposInfo = ARG_CONTAIN_FORK ? reposInfo : reposInfo.filter((repo) => !repo.fork)
-
-const reposDir = `${USERNAME}_repos`
-!ARG_NO_CLONE && await $`rm -rf ${reposDir}`
-!ARG_NO_CLONE && await $`mkdir ${reposDir}`
-cd(`${cwd}/${reposDir}`)
-
-const reposUrls = reposInfo.map((repo) => repo.ssh_url)
-!ARG_NO_CLONE && (await runCloneRepos(reposUrls))
-
-const reposName = (await $`ls`).stdout.split('\n').filter(Boolean)
-for (const name of reposName) {
-  try {
-    cd(`${cwd}/${reposDir}/${name}`)
-    const oldNameAndEmails = (await $`git log --pretty=format:"%an >> %ae" | sort | uniq`).stdout.split('\n').map(i =>i.split(' >> ')).filter(i => i.some(Boolean))
-    const oldNames = oldNameAndEmails.map(i => i[0])
-    const oldEmails = oldNameAndEmails.map(i => i[1])
-
-    await runChangeUserName(OLD_NAMES.filter(name => oldNames.includes(name)), NEW_NAME)
-    await runChangeUserEmail(OLD_EMAILS.filter(email => oldEmails.includes(email)), NEW_EMAIL)
-    
-    
-    ARG_PUSH && (await runAddOrigin(ARG_ORiGIN_NAME, name)) && (await runPush(ARG_ORiGIN_NAME))
-    ARG_PUSH && (await $`rm -rf ${cwd}/${reposDir}/${name}`)
-  } catch (err) {
-    console.log(chalk.red('Error change-git-history ==> '), err)
-  }
+/**
+ * options
+ * containFork: whether to include forked repositories
+ * forceChange: whether to force change
+ * noClone: whether to git clone repositories
+ * noFetch: whether to git fetch repositories info
+ * push: whether to git push
+ * originName: the name of the remote repository
+ */
+const options = {
+ containFork: false,
+ forceChange:  true,
+ noClone: false,
+ noFetch: false,
+ push: true,
+ originName:  'origin',
 }
-
 
 /**
- * request repos
- * @return {Promise<array>}
+ * request repos info
  */
-async function runRequestRepos() {
-  try {
-    const data = await fetch(`https://api.github.com/users/${USERNAME}/repos`,{
-      headers: { Authorization: ACCESS_TOKEN }
-    })
-    return data.json()
-  } catch (err) {
-    console.log(chalk.red('Error runRequestRepos ==> '), err)
-    return []
-  }
-}
+let reposInfo = options.noFetch ? [] : (await runRequestRepos(USERNAME, ACCESS_TOKEN))
+!options.containFork && (reposInfo = reposInfo.filter((repo) => !repo.fork))
+const reposNameMap = reposInfo.reduce((acc, cur) => (acc[cur.name] = cur, acc), {})
 
 /**
  * clone repos
  */
-async function runCloneRepos(urls) {
+!options.noClone && (await runReposClone(reposNameMap, resolve(cwd, REPOS_DIR)))
+
+/**
+ * get repos name
+ */
+const reposName = options.noFetch 
+  ? (await $`ls ${resolve(cwd, REPOS_DIR)}`).stdout.split('\n').filter(Boolean) 
+  : Object.keys(reposNameMap)
+
+/**
+ * console old name and email
+ */
+// const oldNameAndEmails = []
+// for (const name of reposName) {
+//   try {
+//     cd(`${resolve(cwd, REPOS_DIR, name)}`)
+//     oldNameAndEmails.push(...(await $`git log --pretty=format:"%an >> %ae" | sort | uniq`).stdout.split('\n').map(i =>i.split(' >> ')).filter(i => i.some(Boolean)))
+//   } catch (err) {
+//     console.log(chalk.red('Error console old name and email ==> '), err)
+//   }
+  
+// }
+// console.log(chalk.green('oldNameAndEmails ==> '), oldNameAndEmails)
+// process.exit(1)
+
+/**
+ * add remote
+ */
+for (const name of Object.keys(reposNameMap)) {
   try {
-    return await Promise.all(urls.map((url) => $`git clone ${url}`))
+    cd(`${resolve(cwd, REPOS_DIR, name)}`)
+    const originName = await runReposRemote(options.originName, reposNameMap[name].ssh_url)
+    reposNameMap[name]._originName = originName
   } catch (err) {
-    console.log(chalk.red('Error runCloneRepos ==> '), err)
+    console.log(chalk.red('Error add-remote ==> '), err)
   }
 }
 
 /**
- * change git history user name
+ * change git history
  */
-async function runChangeUserName(oldNames, newName) {
-  for (let i = 0; i < oldNames.length; i++) {
-    const oldName = oldNames[i]
-    await $`git-filter-repo \
-      ${ARG_FORCE_CHANGE ? '--force' : ''} \
-      --name-callback 'return name.replace(b"${oldName}", b"${newName}")' \
-      `
+for (const name of reposName) {
+  try {
+    cd(`${resolve(cwd, REPOS_DIR, name)}`)
+
+    await runChangeUserName(OLD_NAMES, NEW_NAME, { force: options.forceChange })
+    await runChangeUserEmail(OLD_EMAILS, NEW_EMAIL, { force: options.forceChange })
+
+    options.push && (await runReposPush(reposNameMap[name]._originName))
+    options.push && (await $`rm -rf ${resolve(cwd, REPOS_DIR, name)}`)
+  } catch (err) {
+    console.log(chalk.red('Error change-git-history ==> '), err)
   }
-}
-
-/**
- * change git history user email
- */
-async function runChangeUserEmail(oldEmails, newEmail) {
-  for (let i = 0; i < oldEmails.length; i++) {
-    const oldEmail = oldEmails[i]
-    await $`git-filter-repo \
-      ${ARG_FORCE_CHANGE ? '--force' : ''} \
-      --email-callback 'return email.replace(b"${oldEmail}", b"${newEmail}")' \
-      `
-  }
-}
-
-/**
- * push to remote
- */
-async function runPush(originName) {
-  await $`git push ${originName} --force`
-  return true
-}
-
-/**
- * git remote add origin
- */
-async function runAddOrigin(originName, repoName) {
-  const isExist = (await $`git remote`).stdout.split('\n').filter(Boolean).includes(originName)
-  originName = `${originName}${isExist ? Date.now() : ''}`
-  await $`git remote add ${originName} ${reposInfo.find(repo => repo.name === repoName).ssh_url}`
-  return true
 }

@@ -25,8 +25,20 @@ update `config.js` to your needs
 ### Run
 
 ```bash
-node change-git-history.js
+pnpm start
 ```
+
+## Config
+
+### ACCESS_TOKEN
+
+> Recommended, resolve the problem of limit  
+> [Generate new token](https://github.com/settings/personal-access-tokens/new)
+
+- Repository access --> All repositories
+- Permissions / Repository permissions / Metadata --> Access: Read-only
+
+## Options
 
 ## Change Fields
 
