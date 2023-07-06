@@ -2,20 +2,20 @@
  * Generate new token
  * https://github.com/settings/personal-access-tokens/new
  */
-export const ACCESS_TOKEN = `replace with your token`
+export const ACCESS_TOKEN = ``
 
 /**
  * Your github username
  */
-export const USERNAME = 'replace with your username'
+export const USERNAME = ''
 
 
 /**
  * Your git user name & email
  * If you don't want to change the user name or email, you can leave it blank
  */
-export const NEW_NAME = 'replace with your name'
-export const NEW_EMAIL = 'replace with your email'
+export const NEW_NAME = ''
+export const NEW_EMAIL = ''
 
 /**
  * Old usernames & emails
@@ -23,10 +23,10 @@ export const NEW_EMAIL = 'replace with your email'
  * you can log old usernames and emails by git log `git log --pretty=format:"%an %ae" | sort | uniq` first
  */
 export const OLD_NAMES = [
-  'replace with your old name',
+  '',
 ]
 export const OLD_EMAILS = [
-  'replace with your old email',
+  '',
 ]
 
 /**
