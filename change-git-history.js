@@ -29,10 +29,10 @@ const cwd = process.cwd()
  */
 const options = {
  containFork: false,
- forceChange:  true,
+ forceChange:  false,
  noClone: false,
  noFetch: false,
- push: true,
+ push: false,
  originName:  'origin',
 }
 
