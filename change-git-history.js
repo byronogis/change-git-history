@@ -85,7 +85,9 @@ const reposName = (options.fetch && options.clone)
 /**
  * add remote
  */
-for (const name of Object.keys(reposNameMap)) {
+for (const name of reposName) {
+  if (!reposNameMap[name]) break
+
   try {
     cd(`${resolve(cwd, REPOS_DIR, name)}`)
     const originName = await runReposRemote(options.origin, reposNameMap[name].ssh_url)
@@ -105,7 +107,7 @@ for (const name of reposName) {
     await runChangeUserName(OLD_NAMES, NEW_NAME, { force: options.force })
     await runChangeUserEmail(OLD_EMAILS, NEW_EMAIL, { force: options.force })
 
-    options.push && (await runReposPush(reposNameMap[name]._originName))
+    options.push && (await runReposPush(reposNameMap[name]?._originName ?? ''))
     options.push && (await $`rm -rf ${resolve(cwd, REPOS_DIR, name)}`)
   } catch (err) {
     console.log(chalk.red('Error change-git-history ==> '), err)
