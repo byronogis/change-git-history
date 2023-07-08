@@ -30,6 +30,8 @@ pnpm start
 
 ## Config
 
+> `congif.js`
+
 ### ACCESS_TOKEN
 
 > Recommended, resolve the problem of limit  
@@ -37,6 +39,24 @@ pnpm start
 
 - Repository access --> All repositories
 - Permissions / Repository permissions / Metadata --> Access: Read-only
+
+### USERNAME
+
+When you set options.request to true(default), you need to set this
+
+### NEW_NAME & NEW_EMAIL
+
+You can set them to change the user information.
+If you don't want to change the user name or email, you can leave it blank.
+
+### OLD_NAMES & OLD_EMAILS
+
+This is used to match the old user information, and the corresponding index is the same.
+
+### REPOS_DIR
+
+The directory where the repositories are located, the default is `{USERNAME}_repos`.
+You can also set it to an relative path of `change-git-history.js` file.
 
 ## Options
 
