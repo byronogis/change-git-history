@@ -40,6 +40,27 @@ pnpm start
 
 ## Options
 
+> you can also use command line options  
+> `--option` means true, `--no-option` means false
+
+| option | description | default |
+| --- | --- | --- |
+| request | whether to request repositories info | true |
+| clone | whether to git clone repositories | true |
+| fork | whether to include forked repositories | false |
+| force | whether to force change | false |
+| push | whether to git push | false |
+
+## Example
+
+```bash
+# contain forked repositories and force change, and git push
+pnpm start --fork --force --push
+
+# no clone repositories, maybe you have cloned before
+pnpm start --no-clone
+```
+
 ## Change Fields
 
 at present:

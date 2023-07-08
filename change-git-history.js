@@ -17,6 +17,7 @@ import {
 } from './config.js'
 
 const cwd = process.cwd()
+const argv = process.argv.slice(2)
 
 /**
  * options
@@ -35,6 +36,13 @@ const options = {
   push: false,
   origin: 'origin',
 }
+Object.keys(options).forEach((key) => {
+  if (argv.includes(`--${key}`)) {
+    options[key] = true
+  } else if (argv.includes(`--no-${key}`)) {
+    options[key] = false
+  }
+})
 
 /**
  * request repos info
