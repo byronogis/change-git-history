@@ -20,40 +20,40 @@ const cwd = process.cwd()
 
 /**
  * options
- * containFork: whether to include forked repositories
- * forceChange: whether to force change
- * noClone: whether to git clone repositories
- * noFetch: whether to git fetch repositories info
+ * request: whether to request repositories info
+ * clone: whether to git clone repositories
+ * fork: whether to include forked repositories
+ * force: whether to force change
  * push: whether to git push
- * originName: the name of the remote repository
+ * origin: the name of the remote repository
  */
 const options = {
- containFork: false,
- forceChange:  false,
- noClone: false,
- noFetch: false,
- push: false,
- originName:  'origin',
+  request: true,
+  clone: true,
+  fork: false,
+  force:  false,
+  push: false,
+  origin: 'origin',
 }
 
 /**
  * request repos info
  */
-let reposInfo = options.noFetch ? [] : (await runRequestRepos(USERNAME, ACCESS_TOKEN))
-!options.containFork && (reposInfo = reposInfo.filter((repo) => !repo.fork))
+let reposInfo = options.request ? (await runRequestRepos(USERNAME, ACCESS_TOKEN)) : []
+!options.fork && (reposInfo = reposInfo.filter((repo) => !repo.fork))
 const reposNameMap = reposInfo.reduce((acc, cur) => (acc[cur.name] = cur, acc), {})
 
 /**
  * clone repos
  */
-!options.noClone && (await runReposClone(reposNameMap, resolve(cwd, REPOS_DIR)))
+options.clone && (await runReposClone(reposNameMap, resolve(cwd, REPOS_DIR)))
 
 /**
  * get repos name
  */
-const reposName = options.noFetch 
-  ? (await $`ls ${resolve(cwd, REPOS_DIR)}`).stdout.split('\n').filter(Boolean) 
-  : Object.keys(reposNameMap)
+const reposName = options.fetch
+  ? Object.keys(reposNameMap)
+  : (await $`ls ${resolve(cwd, REPOS_DIR)}`).stdout.split('\n').filter(Boolean) 
 
 /**
  * console old name and email
@@ -77,7 +77,7 @@ const reposName = options.noFetch
 for (const name of Object.keys(reposNameMap)) {
   try {
     cd(`${resolve(cwd, REPOS_DIR, name)}`)
-    const originName = await runReposRemote(options.originName, reposNameMap[name].ssh_url)
+    const originName = await runReposRemote(options.origin, reposNameMap[name].ssh_url)
     reposNameMap[name]._originName = originName
   } catch (err) {
     console.log(chalk.red('Error add-remote ==> '), err)
@@ -91,8 +91,8 @@ for (const name of reposName) {
   try {
     cd(`${resolve(cwd, REPOS_DIR, name)}`)
 
-    await runChangeUserName(OLD_NAMES, NEW_NAME, { force: options.forceChange })
-    await runChangeUserEmail(OLD_EMAILS, NEW_EMAIL, { force: options.forceChange })
+    await runChangeUserName(OLD_NAMES, NEW_NAME, { force: options.force })
+    await runChangeUserEmail(OLD_EMAILS, NEW_EMAIL, { force: options.force })
 
     options.push && (await runReposPush(reposNameMap[name]._originName))
     options.push && (await $`rm -rf ${resolve(cwd, REPOS_DIR, name)}`)
