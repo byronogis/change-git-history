@@ -44,6 +44,9 @@ Object.keys(options).forEach((key) => {
   }
 })
 
+// no request, no clone
+options.request || (options.clone = false)
+
 /**
  * request repos info
  */
@@ -59,7 +62,7 @@ options.clone && (await runReposClone(reposNameMap, resolve(cwd, REPOS_DIR)))
 /**
  * get repos name
  */
-const reposName = options.fetch
+const reposName = (options.fetch && options.clone)
   ? Object.keys(reposNameMap)
   : (await $`ls ${resolve(cwd, REPOS_DIR)}`).stdout.split('\n').filter(Boolean) 
 
