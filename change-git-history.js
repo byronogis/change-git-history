@@ -104,8 +104,8 @@ for (const name of reposName) {
   try {
     cd(`${resolve(cwd, REPOS_DIR, name)}`)
 
-    await runChangeUserName(OLD_NAMES, NEW_NAME, { force: options.force })
-    await runChangeUserEmail(OLD_EMAILS, NEW_EMAIL, { force: options.force })
+    NEW_NAME && await runChangeUserName(OLD_NAMES, NEW_NAME, { force: options.force })
+    NEW_EMAIL && await runChangeUserEmail(OLD_EMAILS, NEW_EMAIL, { force: options.force })
 
     options.push && (await runReposPush(reposNameMap[name]?._originName ?? ''))
     options.push && (await $`rm -rf ${resolve(cwd, REPOS_DIR, name)}`)
