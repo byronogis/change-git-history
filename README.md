@@ -65,6 +65,11 @@ This is used to match the old user information, and the corresponding index is t
 The directory where the repositories are located, the default is `{USERNAME}_repos`.
 You can also set it to an relative path of `change-git-history.js` file.
 
+### REPOS_NAME_REG
+
+Filter out repositories that do not match the regular
+The default is null, which means no filtering
+
 ## Options
 
 > you can also use command line options  

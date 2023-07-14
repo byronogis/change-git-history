@@ -35,3 +35,11 @@ export const OLD_EMAILS = [
  * Also can be set to an relative path, such as `foo/repos`, `./foo/repos`
  */
 export const REPOS_DIR = `${USERNAME}_repos`
+
+/**
+ * Filter out repositories that do not match the regular
+ * The default is null, which means no filtering
+ * eg: /^foo/  =>  match foo*
+ * eg: /foo$/  =>  match *foo
+ */
+export const REPOS_NAME_REG = /^npm-starter/

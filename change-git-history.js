@@ -13,7 +13,7 @@ import {
   USERNAME,
   NEW_NAME, NEW_EMAIL,
   OLD_NAMES, OLD_EMAILS,
-  REPOS_DIR,
+  REPOS_DIR, REPOS_NAME_REG,
 } from './config.js'
 
 const cwd = process.cwd()
@@ -62,9 +62,10 @@ options.clone && (await runReposClone(reposNameMap, resolve(cwd, REPOS_DIR)))
 /**
  * get repos name
  */
+const reposNameFilter = (name) => !REPOS_NAME_REG || REPOS_NAME_REG.test(name)
 const reposName = (options.fetch && options.clone)
-  ? Object.keys(reposNameMap)
-  : (await $`ls ${resolve(cwd, REPOS_DIR)}`).stdout.split('\n').filter(Boolean) 
+  ? Object.keys(reposNameMap).filter(reposNameFilter)
+  : (await $`ls ${resolve(cwd, REPOS_DIR)}`).stdout.split('\n').filter(Boolean).filter(reposNameFilter)
 
 /**
  * console old name and email
