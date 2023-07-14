@@ -12,9 +12,16 @@ When I changed the user information, I found that the information in the git com
 
 ## Usage
 
+### Clone
+
+```bash
+git clone git@github.com:byronogis/change-git-history.git
+```
+
 ### Install Dependencies
 
 ```bash
+cd change-git-history
 pnpm i
 ```
 
@@ -70,6 +77,25 @@ You can also set it to an relative path of `change-git-history.js` file.
 | fork | whether to include forked repositories | false |
 | force | whether to force change | false |
 | push | whether to git push | false |
+
+### force
+
+When you see the following error: 
+
+```
+Aborting: Refusing to destructively overwrite repo history since
+this does not look like a fresh clone.
+  (expected freshly packed repo)
+Please operate on a fresh clone instead.  If you want to proceed
+anyway, use --force.
+```
+
+you can use `--force` to force change.
+**But please note that this will clear your target repository git working directory, please back up in advance.**
+
+```bash
+pnpm start --force
+```
 
 ## Example
 
