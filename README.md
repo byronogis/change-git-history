@@ -60,6 +60,10 @@ If you don't want to change the user name or email, you can leave it blank.
 
 This is used to match the old user information, and the corresponding index is the same.
 
+### NEW_DATE_HOUR
+
+You can set it to change the author_date and committer_date, the default is null, which means no change.
+
 ### REPOS_DIR
 
 The directory where the repositories are located, the default is `{USERNAME}_repos`.
@@ -75,13 +79,13 @@ The default is null, which means no filtering
 > you can also use command line options  
 > `--option` means true, `--no-option` means false
 
-| option | description | default |
-| --- | --- | --- |
-| request | whether to request repositories info | true |
-| clone | whether to git clone repositories | true |
-| fork | whether to include forked repositories | false |
-| force | whether to force change | false |
-| push | whether to git push | false |
+| option  | description                            | default |
+| ------- | -------------------------------------- | ------- |
+| request | whether to request repositories info   | true    |
+| clone   | whether to git clone repositories      | true    |
+| fork    | whether to include forked repositories | false   |
+| force   | whether to force change                | false   |
+| push    | whether to git push                    | false   |
 
 ### force
 
@@ -117,3 +121,5 @@ pnpm start --no-clone
 at present:
 - user.name
 - user.email
+- author_date
+- committer_date

@@ -18,6 +18,11 @@ export const NEW_NAME = ''
 export const NEW_EMAIL = ''
 
 /**
+ * The date (hour) you want to change to
+ */
+export const NEW_DATE_HOUR = null // eg: 23
+
+/**
  * Old usernames & emails
  * write any number of usernames and emails for replacement
  * you can log old usernames and emails by git log `git log --pretty=format:"%an %ae" | sort | uniq` first

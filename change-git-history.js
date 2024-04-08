@@ -8,12 +8,14 @@ import { runReposRemote } from './script/repos-remote.js'
 import { runReposPush } from './script/repos-push.js'
 import { runChangeUserName } from './script/change-user-name.js'
 import { runChangeUserEmail } from './script/change-user-email.js'
+import { runChangeCommitDate } from './script/change-commit-date.js'
 import { 
   ACCESS_TOKEN,
   USERNAME,
   NEW_NAME, NEW_EMAIL,
   OLD_NAMES, OLD_EMAILS,
   REPOS_DIR, REPOS_NAME_REG,
+  NEW_DATE_HOUR,
 } from './config.js'
 
 const cwd = process.cwd()
@@ -107,6 +109,7 @@ for (const name of reposName) {
 
     NEW_NAME && await runChangeUserName(OLD_NAMES, NEW_NAME, { force: options.force })
     NEW_EMAIL && await runChangeUserEmail(OLD_EMAILS, NEW_EMAIL, { force: options.force })
+    NEW_DATE_HOUR && await runChangeCommitDate(NEW_DATE_HOUR, { force: options.force })
 
     options.push && (await runReposPush(reposNameMap[name]?._originName ?? ''))
     options.push && (await $`rm -rf ${resolve(cwd, REPOS_DIR, name)}`)
