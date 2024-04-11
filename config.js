@@ -47,4 +47,4 @@ export const REPOS_DIR = `${USERNAME}_repos`
  * eg: /^foo/  =>  match foo*
  * eg: /foo$/  =>  match *foo
  */
-export const REPOS_NAME_REG = /^npm-starter/
+export const REPOS_NAME_REG = null
